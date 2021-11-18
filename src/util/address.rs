@@ -117,7 +117,7 @@ macro_rules! serde_string_impl {
         }
     };
 }
-serde_string_impl!(Address, "a Komodo address");
+serde_string_impl!(Address, "a Verus address");
 
 impl Address {
     pub fn p2pkh(_pk: secp256k1::PublicKey) -> Address {

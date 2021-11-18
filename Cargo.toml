@@ -1,5 +1,5 @@
 [package]
-name = "komodo"
+name = "vrsc"
 version = "0.1.0"
 authors = ["jorian"]
 edition = "2018"
@@ -7,7 +7,6 @@ keywords = ["crypto", "bitcoin"]
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 
 [dependencies]
 secp256k1 = { version = "0.19.0", features = ["recovery"] }

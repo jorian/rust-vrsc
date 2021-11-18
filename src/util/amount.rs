@@ -24,12 +24,12 @@ use std::str::FromStr;
 /// A set of denominations in which amounts can be expressed.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Denomination {
-    /// KMD
-    Komodo,
-    /// mKMD
-    MilliKomodo,
-    /// mKMD
-    MicroKomodo,
+    /// VRSC
+    Verus,
+    /// mVRSC
+    MilliVerus,
+    /// uVRSC
+    MicroVerus,
     /// bits
     Bit,
     /// satoshi
@@ -40,9 +40,9 @@ impl Denomination {
     /// The number of decimal places more than a satoshi.
     fn precision(self) -> i32 {
         match self {
-            Denomination::Komodo => -8,
-            Denomination::MilliKomodo => -5,
-            Denomination::MicroKomodo => -2,
+            Denomination::Verus => -8,
+            Denomination::MilliVerus => -5,
+            Denomination::MicroVerus => -2,
             Denomination::Bit => -2,
             Denomination::Satoshi => 0,
         }
@@ -52,9 +52,9 @@ impl Denomination {
 impl fmt::Display for Denomination {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(match *self {
-            Denomination::Komodo => "KMD",
-            Denomination::MilliKomodo => "mKMD",
-            Denomination::MicroKomodo => "uKMD",
+            Denomination::Verus => "VRSC",
+            Denomination::MilliVerus => "mVRSC",
+            Denomination::MicroVerus => "uVRSC",
             Denomination::Bit => "bits",
             Denomination::Satoshi => "satoshi",
         })
@@ -66,9 +66,9 @@ impl FromStr for Denomination {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "KMD" => Ok(Denomination::Komodo),
-            "mKMD" => Ok(Denomination::MilliKomodo),
-            "uKMD" => Ok(Denomination::MicroKomodo),
+            "VRSC" => Ok(Denomination::Verus),
+            "mVRSC" => Ok(Denomination::MilliVerus),
+            "uVRSC" => Ok(Denomination::MicroVerus),
             "bits" => Ok(Denomination::Bit),
             "satoshi" => Ok(Denomination::Satoshi),
             d => Err(ParseAmountError::UnknownDenomination(d.to_owned())),
@@ -241,7 +241,7 @@ fn fmt_satoshi_in(
 
 /// Amount
 ///
-/// The [Amount] type can be used to express Komodo amounts that supports
+/// The [Amount] type can be used to express Verus amounts that supports
 /// arithmetic and conversion to various denominations.
 ///
 ///
@@ -264,8 +264,8 @@ impl Amount {
     pub const ZERO: Amount = Amount(0);
     /// Exactly one satoshi.
     pub const ONE_SAT: Amount = Amount(1);
-    /// Exactly one komodo.
-    pub const ONE_KMD: Amount = Amount(100_000_000);
+    /// Exactly one Verus.
+    pub const ONE_VRSC: Amount = Amount(100_000_000);
 
     /// Create an [Amount] with satoshi precision and the given number of satoshis.
     pub fn from_sat(satoshi: u64) -> Amount {
@@ -287,9 +287,9 @@ impl Amount {
         Amount(u64::min_value())
     }
 
-    /// Convert from a value expressing komodo to an [Amount].
-    pub fn from_kmd(kmd: f64) -> Result<Amount, ParseAmountError> {
-        Amount::from_float_in(kmd, Denomination::Komodo)
+    /// Convert from a value expressing Verus to an [Amount].
+    pub fn from_vrsc(vrsc: f64) -> Result<Amount, ParseAmountError> {
+        Amount::from_float_in(vrsc, Denomination::Verus)
     }
 
     /// Parse a decimal string as a value in the given denomination.
@@ -329,13 +329,13 @@ impl Amount {
         f64::from_str(&self.to_string_in(denom)).unwrap()
     }
 
-    /// Express this [Amount] as a floating-point value in Komodo.
+    /// Express this [Amount] as a floating-point value in Verus.
     ///
-    /// Equivalent to `to_float_in(Denomination::Komodo)`.
+    /// Equivalent to `to_float_in(Denomination::Verus)`.
     ///
     /// Please be aware of the risk of using floating-point numbers.
-    pub fn as_kmd(self) -> f64 {
-        self.to_float_in(Denomination::Komodo)
+    pub fn as_vrsc(self) -> f64 {
+        self.to_float_in(Denomination::Verus)
     }
 
     /// Convert this [Amount] in floating-point notation with a given
@@ -434,11 +434,11 @@ impl fmt::Debug for Amount {
 }
 
 // No one should depend on a binding contract for Display for this type.
-// Just using Komodo denominated string.
+// Just using Verus denominated string.
 impl fmt::Display for Amount {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.fmt_value_in(f, Denomination::Komodo)?;
-        write!(f, " {}", Denomination::Komodo)
+        self.fmt_value_in(f, Denomination::Verus)?;
+        write!(f, " {}", Denomination::Verus)
     }
 }
 
@@ -522,7 +522,7 @@ impl FromStr for Amount {
 
 /// SignedAmount
 ///
-/// The [SignedAmount] type can be used to express Komodo amounts that supports
+/// The [SignedAmount] type can be used to express Verus amounts that supports
 /// arithmetic and conversion to various denominations.
 ///
 ///
@@ -542,8 +542,8 @@ impl SignedAmount {
     pub const ZERO: SignedAmount = SignedAmount(0);
     /// Exactly one satoshi.
     pub const ONE_SAT: SignedAmount = SignedAmount(1);
-    /// Exactly one Komodo.
-    pub const ONE_KMD: SignedAmount = SignedAmount(100_000_000);
+    /// Exactly one Verus.
+    pub const ONE_VRSC: SignedAmount = SignedAmount(100_000_000);
 
     /// Create an [SignedAmount] with satoshi precision and the given number of satoshis.
     pub fn from_sat(satoshi: i64) -> SignedAmount {
@@ -565,9 +565,9 @@ impl SignedAmount {
         SignedAmount(i64::min_value())
     }
 
-    /// Convert from a value expressing Komodo to an [SignedAmount].
-    pub fn from_kmd(kmd: f64) -> Result<SignedAmount, ParseAmountError> {
-        SignedAmount::from_float_in(kmd, Denomination::Komodo)
+    /// Convert from a value expressing Verus to an [SignedAmount].
+    pub fn from_vrsc(vrsc: f64) -> Result<SignedAmount, ParseAmountError> {
+        SignedAmount::from_float_in(vrsc, Denomination::Verus)
     }
 
     /// Parse a decimal string as a value in the given denomination.
@@ -607,13 +607,13 @@ impl SignedAmount {
         f64::from_str(&self.to_string_in(denom)).unwrap()
     }
 
-    /// Express this [SignedAmount] as a floating-point value in Komodo.
+    /// Express this [SignedAmount] as a floating-point value in Verus.
     ///
-    /// Equivalent to `to_float_in(Denomination::Komodo)`.
+    /// Equivalent to `to_float_in(Denomination::Verus)`.
     ///
     /// Please be aware of the risk of using floating-point numbers.
-    pub fn as_kmd(self) -> f64 {
-        self.to_float_in(Denomination::Komodo)
+    pub fn as_vrsc(self) -> f64 {
+        self.to_float_in(Denomination::Verus)
     }
 
     /// Convert this [SignedAmount] in floating-point notation with a given
@@ -757,16 +757,16 @@ impl default::Default for SignedAmount {
 
 impl fmt::Debug for SignedAmount {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "SignedAmount({} KMD)", self.as_kmd())
+        write!(f, "SignedAmount({} VRSC)", self.as_vrsc())
     }
 }
 
 // No one should depend on a binding contract for Display for this type.
-// Just using Komodo denominated string.
+// Just using Verus denominated string.
 impl fmt::Display for SignedAmount {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.fmt_value_in(f, Denomination::Komodo)?;
-        write!(f, " {}", Denomination::Komodo)
+        self.fmt_value_in(f, Denomination::Verus)?;
+        write!(f, " {}", Denomination::Verus)
     }
 }
 
@@ -863,11 +863,11 @@ pub mod serde {
     //!
     //! ```rust,ignore
     //! use serde::{Serialize, Deserialize};
-    //! use komodo::Amount;
+    //! use Verus::Amount;
     //!
     //! #[derive(Serialize, Deserialize)]
     //! pub struct HasAmount {
-    //!     #[serde(with = "komodo::util::amount::serde::as_kmd")]
+    //!     #[serde(with = "Verus::util::amount::serde::as_VRSC")]
     //!     pub amount: Amount,
     //! }
     //! ```
@@ -880,8 +880,8 @@ pub mod serde {
     pub trait SerdeAmount: Copy + Sized {
         fn ser_sat<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error>;
         fn des_sat<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error>;
-        fn ser_kmd<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error>;
-        fn des_kmd<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error>;
+        fn ser_vrsc<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error>;
+        fn des_vrsc<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error>;
     }
 
     impl SerdeAmount for Amount {
@@ -891,12 +891,12 @@ pub mod serde {
         fn des_sat<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
             Ok(Amount::from_sat(u64::deserialize(d)?))
         }
-        fn ser_kmd<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error> {
-            f64::serialize(&self.to_float_in(Denomination::Komodo), s)
+        fn ser_vrsc<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error> {
+            f64::serialize(&self.to_float_in(Denomination::Verus), s)
         }
-        fn des_kmd<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
+        fn des_vrsc<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
             use serde::de::Error;
-            Ok(Amount::from_kmd(f64::deserialize(d)?).map_err(D::Error::custom)?)
+            Ok(Amount::from_vrsc(f64::deserialize(d)?).map_err(D::Error::custom)?)
         }
     }
 
@@ -907,12 +907,12 @@ pub mod serde {
         fn des_sat<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
             Ok(SignedAmount::from_sat(i64::deserialize(d)?))
         }
-        fn ser_kmd<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error> {
-            f64::serialize(&self.to_float_in(Denomination::Komodo), s)
+        fn ser_vrsc<S: Serializer>(self, s: S) -> Result<S::Ok, S::Error> {
+            f64::serialize(&self.to_float_in(Denomination::Verus), s)
         }
-        fn des_kmd<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
+        fn des_vrsc<'d, D: Deserializer<'d>>(d: D) -> Result<Self, D::Error> {
             use serde::de::Error;
-            Ok(SignedAmount::from_kmd(f64::deserialize(d)?).map_err(D::Error::custom)?)
+            Ok(SignedAmount::from_vrsc(f64::deserialize(d)?).map_err(D::Error::custom)?)
         }
     }
 
@@ -956,24 +956,24 @@ pub mod serde {
         }
     }
 
-    pub mod as_kmd {
-        //! Serialize and deserialize [Amount] as JSON numbers denominated in kmd.
-        //! Use with `#[serde(with = "amount::serde::as_kmd")]`.
+    pub mod as_vrsc {
+        //! Serialize and deserialize [Amount] as JSON numbers denominated in VRSC.
+        //! Use with `#[serde(with = "amount::serde::as_VRSC")]`.
 
         use crate::util::amount::serde::SerdeAmount;
         use serde::{Deserializer, Serializer};
 
         pub fn serialize<A: SerdeAmount, S: Serializer>(a: &A, s: S) -> Result<S::Ok, S::Error> {
-            a.ser_kmd(s)
+            a.ser_vrsc(s)
         }
 
         pub fn deserialize<'d, A: SerdeAmount, D: Deserializer<'d>>(d: D) -> Result<A, D::Error> {
-            A::des_kmd(d)
+            A::des_vrsc(d)
         }
 
         pub mod opt {
-            //! Serialize and deserialize [Option<Amount>] as JSON numbers denominated in kmd.
-            //! Use with `#[serde(default, with = "amount::serde::as_kmd::opt")]`.
+            //! Serialize and deserialize [Option<Amount>] as JSON numbers denominated in VRSC.
+            //! Use with `#[serde(default, with = "amount::serde::as_VRSC::opt")]`.
 
             use crate::util::amount::serde::SerdeAmount;
             use serde::{Deserializer, Serializer};
@@ -983,7 +983,7 @@ pub mod serde {
                 s: S,
             ) -> Result<S::Ok, S::Error> {
                 match *a {
-                    Some(a) => a.ser_kmd(s),
+                    Some(a) => a.ser_vrsc(s),
                     None => s.serialize_none(),
                 }
             }
@@ -991,7 +991,7 @@ pub mod serde {
             pub fn deserialize<'d, A: SerdeAmount, D: Deserializer<'d>>(
                 d: D,
             ) -> Result<Option<A>, D::Error> {
-                Ok(Some(A::des_kmd(d)?))
+                Ok(Some(A::des_vrsc(d)?))
             }
         }
     }
