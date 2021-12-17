@@ -1,7 +1,10 @@
-use bitcoin::hashes::Hash;
 use bitcoin::util::base58;
 // use bitcoin::util::base58::from;
+use bitcoin::hashes::Hash as BitcoinHash;
 use bitcoin::{PubkeyHash, Script, ScriptHash};
+use bitcoin_hashes::{
+    borrow_slice_impl, hash160, hash_newtype, hex_fmt_impl, index_impl, serde_impl, Hash,
+};
 // use serde::*;
 use std::error;
 use std::fmt::{self, Display, Formatter};
@@ -13,6 +16,13 @@ pub enum Error {
     Base58(base58::Error),
     UncompressedPubkey,
 }
+
+hash_newtype!(
+    IdentityHash,
+    hash160::Hash,
+    20,
+    doc = "A bitcoin transaction hash/transaction ID."
+);
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
@@ -54,12 +64,14 @@ pub struct Address {
 pub enum Payload {
     PubkeyHash(PubkeyHash),
     ScriptHash(ScriptHash),
+    IdentityHash(IdentityHash),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AddressType {
     P2pkh,
     P2sh,
+    Identity,
     Shielded,
 }
 
@@ -132,6 +144,7 @@ impl Address {
         match self.payload {
             Payload::PubkeyHash(_) => Some(AddressType::P2pkh),
             Payload::ScriptHash(_) => Some(AddressType::P2sh),
+            Payload::IdentityHash(_) => Some(AddressType::Identity),
         }
     }
 
@@ -172,6 +185,10 @@ impl FromStr for Address {
             85 => (
                 AddressType::P2sh,
                 Payload::ScriptHash(ScriptHash::from_slice(&data[1..]).unwrap()),
+            ),
+            102 => (
+                AddressType::P2sh,
+                Payload::IdentityHash(IdentityHash::from_slice(&data[1..]).unwrap()),
             ),
             x => return Err(Error::Base58(base58::Error::InvalidVersion(vec![x]))),
         };
@@ -217,6 +234,12 @@ impl Display for Address {
             Payload::ScriptHash(ref hash) => {
                 let mut prefixed = [0; 21];
                 prefixed[0] = 85;
+                prefixed[1..].copy_from_slice(&hash[..]);
+                base58::check_encode_slice_to_fmt(fmt, &prefixed[..])
+            }
+            Payload::IdentityHash(ref hash) => {
+                let mut prefixed = [0; 21];
+                prefixed[0] = 102;
                 prefixed[1..].copy_from_slice(&hash[..]);
                 base58::check_encode_slice_to_fmt(fmt, &prefixed[..])
             }
