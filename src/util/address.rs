@@ -187,7 +187,7 @@ impl FromStr for Address {
                 Payload::ScriptHash(ScriptHash::from_slice(&data[1..]).unwrap()),
             ),
             102 => (
-                AddressType::P2sh,
+                AddressType::Identity,
                 Payload::IdentityHash(IdentityHash::from_slice(&data[1..]).unwrap()),
             ),
             x => return Err(Error::Base58(base58::Error::InvalidVersion(vec![x]))),
