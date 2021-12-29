@@ -1,9 +1,11 @@
 [package]
 name = "vrsc"
-version = "0.1.0"
+description = "a library for Verus types"
+version = "0.0.1"
 authors = ["jorian"]
 edition = "2018"
-keywords = ["crypto", "bitcoin"]
+keywords = ["crypto", "bitcoin", "verus"]
+license = "MIT"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
